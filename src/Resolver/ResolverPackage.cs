@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NuGet.Resolver
 {
-    public class ResolverPackage
+    public class ResolverPackage : PackageDependencyInfo
     {
         public bool Absent { get; set; }
         private readonly PackageIdentity _identity;
@@ -27,21 +27,10 @@ namespace NuGet.Resolver
 
         }
 
-        public ResolverPackage(string id, NuGetVersion version, IEnumerable<PackageDependency> dependencies)
-            : this(new PackageIdentity(id, version), dependencies)
+        public ResolverPackage(string id, NuGetVersion version, IEnumerable<PackageDependency> dependencies, bool absent=false)
+            : base(id, version, dependencies)
         {
-
-        }
-
-        /// <summary>
-        /// A package identity and its dependencies.
-        /// </summary>
-        /// <param name="identity"></param>
-        /// <param name="dependencies">Dependencies from the relevant target framework group. This group should be selected based on the 
-        /// project target framework.</param>
-        public ResolverPackage(PackageIdentity identity, IEnumerable<PackageDependency> dependencies)
-        {
-            _identity = identity;
+            Absent = absent;
 
             if (dependencies == null)
             {
@@ -53,20 +42,22 @@ namespace NuGet.Resolver
             }
         }
 
-        public PackageIdentity PackageIdentity
+        public ResolverPackage(PackageDependencyInfo info, bool absent)
+            : this(info.Id, info.Version, info.Dependencies, absent)
         {
-            get
-            {
-                return _identity;
-            }
+
         }
 
-        public PackageDependency[] Dependencies
+        /// <summary>
+        /// A package identity and its dependencies.
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <param name="dependencies">Dependencies from the relevant target framework group. This group should be selected based on the 
+        /// project target framework.</param>
+        public ResolverPackage(PackageIdentity identity, IEnumerable<PackageDependency> dependencies)
+            : this(identity.Id, identity.Version, dependencies)
         {
-            get
-            {
-                return _dependencies;
-            }
+
         }
 
         /// <summary>
